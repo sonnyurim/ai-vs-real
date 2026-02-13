@@ -114,8 +114,8 @@ export function QuizContainer({ sessionId, questions }: QuizContainerProps) {
   const isTwin = currentQuestion.is_twin;
 
   return (
-    <div className="flex min-h-dvh w-full flex-col justify-center px-4 py-6">
-      <div className={`mx-auto flex w-full flex-col gap-6 transition-all ${isTwin ? "max-w-[1360px]" : "max-w-2xl"}`}>
+    <div className="flex h-dvh w-full flex-col px-4 py-3">
+      <div className={`mx-auto flex w-full flex-1 min-h-0 flex-col gap-3 transition-all ${isTwin ? "max-w-5xl" : "max-w-2xl"}`}>
       <ProgressBar
         current={currentIndex + 1}
         total={questions.length}

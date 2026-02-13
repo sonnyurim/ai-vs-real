@@ -18,7 +18,7 @@ function VoteBar({ votes }: { votes: VoteOption[] }) {
       <p className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
         다른 사람들의 선택
       </p>
-      <div className="flex h-10 w-full overflow-hidden rounded-lg">
+      <div className="flex h-8 w-full overflow-hidden rounded-lg">
         {votes.map((v, i) => {
           const pct = Math.round((v.count / total) * 100);
           if (pct === 0) return null;
@@ -41,11 +41,11 @@ function VoteBar({ votes }: { votes: VoteOption[] }) {
 
 export function AnswerReveal({ result, onNext, isLast }: AnswerRevealProps) {
   return (
-    <div className="flex flex-col gap-5 rounded-2xl border border-border/50 bg-card/80 p-6 backdrop-blur">
+    <div className="shrink-0 flex flex-col gap-3 rounded-xl border border-border/50 bg-card/80 p-4 backdrop-blur">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <span
-            className={`flex h-14 w-14 items-center justify-center rounded-full text-2xl font-bold text-white ${
+            className={`flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white ${
               result.correct ? "bg-correct" : "bg-incorrect"
             }`}
           >
@@ -53,11 +53,11 @@ export function AnswerReveal({ result, onNext, isLast }: AnswerRevealProps) {
           </span>
           <div>
             <p
-              className={`text-2xl font-bold ${result.correct ? "text-correct" : "text-incorrect"}`}
+              className={`text-lg font-bold ${result.correct ? "text-correct" : "text-incorrect"}`}
             >
               {result.correct ? "정답!" : "오답!"}
             </p>
-            <p className="text-base text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               정답은 <span className="font-semibold text-foreground">{result.correct_answer.toUpperCase()}</span>
             </p>
           </div>
@@ -66,8 +66,7 @@ export function AnswerReveal({ result, onNext, isLast }: AnswerRevealProps) {
         <Button
           onClick={onNext}
           variant="outline"
-          size="lg"
-          className="text-lg font-semibold"
+          className="text-base font-semibold"
         >
           {isLast ? "결과 보기" : "NEXT →"}
         </Button>
