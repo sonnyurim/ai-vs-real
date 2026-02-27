@@ -1,34 +1,33 @@
-// --- Database row types ---
+// src/types/quiz.ts
 
-export interface QuestionRow {
-  question_id: number;
-  image_url: string;
-  answer: string;
-  pair_id: number | null;
+export type Difficulty = "easy" | "medium" | "hard";
+
+export interface QuizObject {
+  id: number;
+  name: string;
+  hitbox: { x: number; y: number; width: number; height: number }; // % 단위
+  hint: HintArea | HintText;
 }
 
-export interface QuizSessionRow {
-  quiz_session_id: number;
-  nickname: string;
-  correct_count: number;
-  started_at: string;
-  finished_at: string | null;
+export interface HintArea {
+  type: "area";
+  cx: number;
+  cy: number;
+  radius: number; // % 단위
 }
 
-// --- API types ---
-
-export interface TwinImageInfo {
-  id: string;
-  url: string;
+export interface HintText {
+  type: "text";
+  value: string;
 }
 
-export interface QuizQuestionPayload {
-  id: string;
+export interface QuizQuestion {
+  id: number;
   order: number;
-  image_url?: string;
-  is_twin?: boolean;
-  image_a?: TwinImageInfo;
-  image_b?: TwinImageInfo;
+  image_url: string;
+  difficulty: Difficulty;
+  time_limit: number;
+  objects: QuizObject[];
 }
 
 export interface StartQuizRequest {
@@ -37,33 +36,19 @@ export interface StartQuizRequest {
 
 export interface StartQuizResponse {
   session_id: string;
-  questions: QuizQuestionPayload[];
+  questions: QuizQuestion[];
 }
 
-export interface SubmitAnswerRequest {
+export interface FinishQuizRequest {
   session_id: string;
-  question_id: string;
-  answer: string;
-  question_order: number;
-}
-
-export interface VoteOption {
-  label: string;
-  count: number;
-}
-
-export interface SubmitAnswerResponse {
-  correct: boolean;
-  correct_answer: string;
-  votes: VoteOption[];
-  game_over: boolean;
+  score: number;
+  hint_count: number;
 }
 
 export interface QuizResultResponse {
   nickname: string;
   score: number;
-  correct_count: number;
-  total_questions: number;
+  hint_count: number;
   tier: TierInfo;
   rank: number;
   total_players: number;
@@ -81,3 +66,32 @@ export interface RankingEntry {
   score: number;
 }
 
+// Supabase row types
+export interface QuizRow {
+  id: number;
+  image_url: string;
+  difficulty: Difficulty;
+  status: string;
+}
+
+export interface QuizObjectRow {
+  id: number;
+  quiz_id: number;
+  ai_object_name: string;
+  hitbox_x: number;
+  hitbox_y: number;
+  hitbox_w: number;
+  hitbox_h: number;
+  hint_cx: number;
+  hint_cy: number;
+  hint_radius: number;
+  sort_order: number;
+}
+
+export interface QuizSessionRow {
+  id: number;
+  nickname: string;
+  score: number;
+  hint_count: number;
+  finished_at: string;
+}

@@ -1,7 +1,7 @@
+// src/app/api/result/[sessionId]/route.ts
 import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
-import { QUIZ_CONFIG } from "@/lib/constants";
-import { getScore, getTier } from "@/lib/scoring";
+import { getTier } from "@/lib/scoring";
 import type { QuizSessionRow } from "@/types/quiz";
 
 export async function GET(
@@ -14,40 +14,31 @@ export async function GET(
   const { data: session } = await supabase
     .from("quiz_sessions")
     .select("*")
-    .eq("quiz_session_id", sessionId)
+    .eq("id", Number(sessionId))
     .single<QuizSessionRow>();
 
   if (!session) {
-    return NextResponse.json(
-      { error: "세션을 찾을 수 없습니다" },
-      { status: 404 },
-    );
+    return NextResponse.json({ error: "세션을 찾을 수 없습니다" }, { status: 404 });
   }
 
-  const score = getScore(session.correct_count);
-  const tier = getTier(score);
+  const tier = getTier(session.score);
 
-  // Calculate rank
-  const { count: betterCount } = await supabase
-    .from("quiz_sessions")
-    .select("*", { count: "exact", head: true })
-    .not("finished_at", "is", null)
-    .gt("correct_count", session.correct_count);
-
-  const { count: totalPlayers } = await supabase
-    .from("quiz_sessions")
-    .select("*", { count: "exact", head: true })
-    .not("finished_at", "is", null);
-
-  const rank = (betterCount ?? 0) + 1;
+  const [{ count: betterCount }, { count: totalPlayers }] = await Promise.all([
+    supabase
+      .from("quiz_sessions")
+      .select("*", { count: "exact", head: true })
+      .gt("score", session.score),
+    supabase
+      .from("quiz_sessions")
+      .select("*", { count: "exact", head: true }),
+  ]);
 
   return NextResponse.json({
     nickname: session.nickname,
-    score,
-    correct_count: session.correct_count,
-    total_questions: QUIZ_CONFIG.TOTAL_QUESTIONS,
+    score: session.score,
+    hint_count: session.hint_count,
     tier,
-    rank,
+    rank: (betterCount ?? 0) + 1,
     total_players: totalPlayers ?? 0,
   });
 }
