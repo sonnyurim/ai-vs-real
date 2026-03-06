@@ -71,7 +71,7 @@ export function NicknameForm() {
         <input
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
-          placeholder="코드네임 입력"
+          placeholder="두 글자 이상 입력하세요."
           maxLength={QUIZ_CONFIG.NICKNAME_MAX}
           autoFocus
           className="flex-1 bg-transparent font-mono text-2xl font-bold text-foreground caret-brand placeholder:text-muted-foreground/20 focus:outline-none"

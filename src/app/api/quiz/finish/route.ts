@@ -5,22 +5,23 @@ import type { FinishQuizRequest } from "@/types/quiz";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as FinishQuizRequest;
-  const { session_id, score, hint_count } = body;
+  const { nickname, score, hint_count } = body;
 
-  if (!session_id || score == null || hint_count == null) {
+  if (!nickname || score == null || hint_count == null) {
     return NextResponse.json({ error: "잘못된 요청입니다" }, { status: 400 });
   }
 
   const supabase = createServerClient();
 
-  const { error } = await supabase
+  const { data: session, error } = await supabase
     .from("quiz_sessions")
-    .update({ score, hint_count })
-    .eq("id", Number(session_id));
+    .insert({ nickname, score, hint_count })
+    .select("id")
+    .single();
 
-  if (error) {
+  if (error || !session) {
     return NextResponse.json({ error: "저장 실패" }, { status: 500 });
   }
 
-  return NextResponse.json({ session_id });
+  return NextResponse.json({ session_id: String(session.id) });
 }

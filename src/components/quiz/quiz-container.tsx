@@ -16,7 +16,6 @@ export interface ObjectState {
 }
 
 interface QuizContainerProps {
-  sessionId: string;
   questions: QuizQuestion[];
 }
 
@@ -30,7 +29,7 @@ function initObjectStates(question: QuizQuestion): ObjectState[] {
   }));
 }
 
-export function QuizContainer({ sessionId, questions }: QuizContainerProps) {
+export function QuizContainer({ questions }: QuizContainerProps) {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
@@ -43,6 +42,15 @@ export function QuizContainer({ sessionId, questions }: QuizContainerProps) {
 
   const currentQuestion = questions[currentIndex];
   const isLast = currentIndex === questions.length - 1;
+
+  // 세션 시작 시 전체 이미지 프리로드
+  useEffect(() => {
+    questions.forEach((q) => {
+      const img = new window.Image();
+      img.src = q.image_url;
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleTimeout() {
     // 타이머 종료 — 미발견 객체는 점수 0으로 확정, 찾은 객체만 점수 합산
@@ -96,16 +104,14 @@ export function QuizContainer({ sessionId, questions }: QuizContainerProps) {
 
   async function handleNext() {
     if (isLast) {
-      await fetch("/api/quiz/finish", {
+      const nickname = sessionStorage.getItem("quiz_nickname") ?? "";
+      const res = await fetch("/api/quiz/finish", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          session_id: sessionId,
-          score: totalScore,
-          hint_count: 0,
-        }),
+        body: JSON.stringify({ nickname, score: totalScore, hint_count: 0 }),
       });
-      router.replace(`/result/${sessionId}`);
+      const data = await res.json();
+      router.replace(`/result/${data.session_id}`);
       return;
     }
 

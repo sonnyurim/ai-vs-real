@@ -35,12 +35,11 @@ export interface StartQuizRequest {
 }
 
 export interface StartQuizResponse {
-  session_id: string;
   questions: QuizQuestion[];
 }
 
 export interface FinishQuizRequest {
-  session_id: string;
+  nickname: string;
   score: number;
   hint_count: number;
 }

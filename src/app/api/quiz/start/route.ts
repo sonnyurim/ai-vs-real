@@ -45,15 +45,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "문제를 불러올 수 없습니다" }, { status: 500 });
   }
 
-  const { data: session, error: sessionError } = await supabase
-    .from("quiz_sessions")
-    .insert({ nickname, score: 0, hint_count: 0 })
-    .select("id")
-    .single();
-
-  if (sessionError || !session) {
-    return NextResponse.json({ error: "세션 생성 실패" }, { status: 500 });
-  }
-
-  return NextResponse.json({ session_id: String(session.id), questions });
+  return NextResponse.json({ questions });
 }

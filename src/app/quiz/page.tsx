@@ -34,7 +34,6 @@ export default function QuizPage() {
 
   return (
     <QuizContainer
-      sessionId={session.session_id}
       questions={session.questions}
     />
   );
