@@ -43,11 +43,20 @@ export function QuizContainer({ questions }: QuizContainerProps) {
   const currentQuestion = questions[currentIndex];
   const isLast = currentIndex === questions.length - 1;
 
-  // 세션 시작 시 전체 이미지 프리로드
+  // 세션 시작 시 전체 이미지 프리로드 (Next.js 최적화 경로, link rel=preload 사용)
   useEffect(() => {
+    const dpr = window.devicePixelRatio || 1;
+    const containerWidth = Math.min(window.innerWidth, 672);
+    const needed = containerWidth * dpr;
+    const deviceSizes = [390, 640, 750, 828, 1080, 1200];
+    const w = deviceSizes.find((s) => s >= needed) ?? 1200;
+
     questions.forEach((q) => {
-      const img = new window.Image();
-      img.src = q.image_url;
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "image";
+      link.href = `/_next/image?url=${encodeURIComponent(q.image_url)}&w=${w}&q=70`;
+      document.head.appendChild(link);
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

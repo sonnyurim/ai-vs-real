@@ -47,11 +47,9 @@ export function FindObjectQuestion({
 }: FindObjectQuestionProps) {
   const imgRef = useRef<HTMLDivElement>(null);
   const [markers, setMarkers] = useState<ClickMarker[]>([]);
-  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     setMarkers([]);
-    setImageLoaded(false);
   }, [question.id]);
 
   function handleImageClick(e: React.MouseEvent) {
@@ -113,21 +111,16 @@ export function FindObjectQuestion({
         onClick={handleImageClick}
       >
         <Image
-          key={question.id}
           src={question.image_url}
           alt="퀴즈 이미지"
           fill
           className="object-cover"
-          style={{ objectFit: "cover", opacity: imageLoaded ? 1 : 0, transition: "opacity 0.2s" }}
+          style={{ objectFit: "cover" }}
           priority
           draggable={false}
           onDragStart={(e) => e.preventDefault()}
-          onLoad={() => setImageLoaded(true)}
           sizes="(max-width: 768px) 100vw, 672px"
         />
-        {!imageLoaded && (
-          <div className="absolute inset-0 animate-pulse bg-muted" />
-        )}
 
         {/* 코너 브래킷 장식 */}
         <div className="pointer-events-none absolute inset-0">
